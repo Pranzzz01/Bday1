@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Dream of Pranzzz ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --gold: #ffd700;
+            --magic-pink: #ff007f;
+            --deep-purple: #12002f;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--deep-purple);
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden; /* No scrolling, we use transitions */
+            height: 100vh;
+        }
+
+        /* Magical Moving Background */
+        #canvas-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #2e004f 0%, #000000 100%);
+            z-index: -1;
+        }
+
+        .scene {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 1s ease-in-out;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+        .visible { opacity: 1; pointer-events: all; transform: scale(1); }
+
+        h1, h2 { font-family: 'Cinzel Decorative', cursive; color: var(--gold); text-shadow: 0 0 15px var(--gold); }
+
+        /* The Door (Page 1) */
+        #portal {
+            width: 200px;
+            height: 200px;
+            border: 5px solid var(--gold);
+            border-radius: 50% 50% 0 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px var(--gold);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px var(--gold); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px var(--magic-pink); }
+            100% { transform: scale(1); box-shadow: 0 0 20px var(--gold); }
+        }
+
+        /* Glass Cards */
+        .magic-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        /* The Magic Garden (Game) */
+        .garden {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .flower {
+            font-size: 40px;
+            cursor: pointer;
+            transition: 0.3s;
+            filter: grayscale(1);
+        }
+        .flower.bloom { filter: grayscale(0); transform: scale(1.2); }
+
+        /* Buttons */
+        .magic-btn {
+            background: none;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Cinzel Decorative', cursive;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .magic-btn:hover { background: var(--gold); color: black; }
+
+        /* Scroll */
+        .scroll {
+            background: #f4e4bc;
+            color: #5d4037;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px black;
+            font-family: 'Dancing Script', cursive;
+            transform: rotate(-1deg);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Music control */
+        #music-toggle {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            z-index: 100;
+            background: var(--gold);
+            color: black;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+    <div id="music-toggle" onclick="toggleMusic()">🎵</div>
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SCENE 1: THE PORTAL -->
+    <div class="scene visible" id="scene1">
+        <h2>Hey Pranzzz… ❤️</h2>
+        <p style="margin-bottom: 20px;">A magical world is waiting for you.</p>
+        <div id="portal" onclick="nextScene(2)">
+            <span style="font-size: 50px;">💌</span>
+        </div>
+        <p style="margin-top: 20px; color: var(--gold);">Tap the Portal to Enter</p>
+    </div>
+
+    <!-- SCENE 2: CONSTELLATION OF US -->
+    <div class="scene hidden" id="scene2">
+        <div class="magic-card">
+            <h2>Our Story in the Stars</h2>
+            <p style="color: var(--gold); font-weight: bold;">23 • 01 • 2026</p>
+            <p style="margin-top: 15px;">The day the universe brought <b>Krushna</b> and <b>Pranjal</b> together. It wasn't just a date; it was the start of our destiny.</p>
+            <button class="magic-btn" onclick="nextScene(3)">Walk Further →</button>
+        </div>
+    </div>
+
+    <!-- SCENE 3: THE MAGIC GARDEN (GAME) -->
+    <div class="scene hidden" id="scene3">
+        <div class="magic-card">
+            <h2>The Garden of Wishes</h2>
+            <p>Pranzzz, touch the flowers to see my heart bloom!</p>
+            <div class="garden">
+                <div class="flower" onclick="bloom(this, 'You are my world ❤️')">🌸</div>
+                <div class="flower" onclick="bloom(this, 'My Princess Pranzzz 👑')">🌸</div>
+                <div class="flower" onclick="bloom(this, 'Always yours, Krushna 🫶')">🌸</div>
+                <div class="flower" onclick="bloom(this, 'Best Girlfriend Ever 🍕')">🌸</div>
+                <div class="flower" onclick="bloom(this, 'Happy Birthday Love 🎂')">🌸</div>
+                <div class="flower" onclick="bloom(this, 'To Forever... ♾️')">🌸</div>
+            </div>
+            <p id="garden-msg" style="margin-top: 20px; min-height: 24px; color: var(--gold);"></p>
+            <button id="garden-next" class="magic-btn hidden" onclick="nextScene(4)">See My Secret Message →</button>
+        </div>
+    </div>
+
+    <!-- SCENE 4: THE SCROLL (LETTER) -->
+    <div class="scene hidden" id="scene4">
+        <div class="scroll">
+            <h2 style="color: #5d4037; text-shadow: none;">My Letter to Pranzzz 💌</h2>
+            <p style="margin-top: 15px; font-size: 1.2rem; line-height: 1.6;">
+                Dearest Pranzzz,<br><br>
+                Today is the most special day because it's the day you were born. You are the light in my life, the calm in my storm, and the magic in my every day.<br><br>
+                Since 23.01.2026, every moment with you has been a treasure. Thank you for being my <b>Pranzzz</b>. I promise to keep loving you more with every passing second.<br><br>
+                Happy Birthday, my love.<br><br>
+                <b>Always yours,<br>Krushna ❤️</b>
+            </p>
+        </div>
+        <button class="magic-btn" onclick="nextScene(5)">One Last Thing... 🎁</button>
+    </div>
+
+    <!-- SCENE 5: THE FINAL REVEAL -->
+    <div class="scene hidden" id="scene5">
+        <h1 style="font-size: 3rem;">HAPPY BIRTHDAY <br> PRANZZZ ❤️🎂</h1>
+        <div class="magic-card" style="margin-top: 20px;">
+            <p>You are my favorite chapter of life.</p>
+            <p>I Love You Today, Tomorrow, and Forever. ❤️</p>
+            <p style="margin-top: 10px; color: var(--gold);">— Krushna</p>
+            <button class="magic-btn" onclick="location.reload()">Replay the Dream 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // Background Stars Animation
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function initStars() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 150; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speed: Math.random() * 0.5
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.y += star.speed;
+                if (star.y > canvas.height) star.y = 0;
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener('resize', initStars);
+        initStars();
+        drawStars();
+
+        // Scene Logic
+        let currentScene = 1;
+        function nextScene(n) {
+            document.getElementById(`scene${currentScene}`).classList.remove('visible');
+            document.getElementById(`scene${currentScene}`).classList.add('hidden');
+            
+            setTimeout(() => {
+                document.getElementById(`scene${n}`).classList.remove('hidden');
+                document.getElementById(`scene${n}`).classList.add('visible');
+                currentScene = n;
+                if(n === 5) triggerConfetti();
+            }, 500);
+
+            if(n === 2) document.getElementById('bg-music').play();
+        }
+
+        // Garden Game Logic
+        let bloomedCount = 0;
+        function bloom(el, msg) {
+            if(!el.classList.contains('bloom')) {
+                el.classList.add('bloom');
+                bloomedCount++;
+                document.getElementById('garden-msg').innerText = msg;
+                if(bloomedCount === 6) {
+                    document.getElementById('garden-next').classList.remove('hidden');
+                }
+            }
+        }
+
+        // Confetti
+        function triggerConfetti() {
+            var end = Date.now() + (15 * 1000);
+            var colors = ['#ffd700', '#ff007f', '#ffffff'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function toggleMusic() {
+            const m = document.getElementById('bg-music');
+            if(m.paused) m.play(); else m.pause();
+        }
+    </script>
+</body>
+</html>
